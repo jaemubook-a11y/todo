@@ -1,18 +1,13 @@
-async function fetchTodos() {
-  const res = await fetch("/.netlify/functions/todos");
-  const data = await res.json();
-  if (!res.ok) {
-    console.log("API error", data);
-    return;
-  }
-  render(data.results || []);
-}
+fetch("/.netlify/functions/todos")
+  .then(res => res.json())
+  .then(data => {
+    const list = document.getElementById("todo-list");
+    list.innerHTML = "";
 
-async function updateTodo(pageId, value) {
-  await fetch("/.netlify/functions/toggle", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ pageId, value })
+    data.results.forEach(item => {
+      const title = item.properties.Name.title[0]?.plain_text || "";
+      const li = document.createElement("li");
+      li.textContent = title;
+      list.appendChild(li);
+    });
   });
-  fetchTodos();
-}
